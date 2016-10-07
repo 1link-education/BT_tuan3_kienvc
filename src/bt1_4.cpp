@@ -40,13 +40,13 @@ unsigned __stdcall FolderFilesWatchThread(LPVOID lpParam) // thread procedure
 		//WaitForSingleObject(hFileChange, INFINITE);
 
 		//while(!TryEnterCriticalSection(&critical)){}
-		HANDLE listFile = FindFirstFile(L"C:\\Users\\vuchi\\Documents\\Visual Studio 2008\\Projects\\bt1_4\\bt1_4\\Diem_thi\\*", &file_data);
+		HANDLE listFile = FindFirstFile(L"DIEM_THI_2016\\*", &file_data);
 		file.open("output.txt");
 		while(listFile != INVALID_HANDLE_VALUE)
 		{
 			i++;
 			if(i > 2){
-				wstring tmp = L"C:\\Users\\vuchi\\Documents\\Visual Studio 2008\\Projects\\bt1_4\\bt1_4\\Diem_thi\\";
+				wstring tmp = L"DIEM_THI_2016\\";
 				wstring dir1(file_data.cFileName);
 				tmp += dir1;
 				string dir2(tmp.begin(), tmp.end());
@@ -113,23 +113,11 @@ int main(int argc, char argv[])
 	ds = SVController(view);
 	UI ui;
 
-	for(int i = 0; i < 2; i++)
-	{
-		ghSemaphore[i] = CreateSemaphore( 
-			NULL,           // default security attributes
-			0,  // initial count
-			1,  // maximum count
-			NULL);          // unnamed semaphore
-
-		if (ghSemaphore[i] == NULL) 
-		{
-			printf("CreateSemaphore error: %d\n", GetLastError());
-			return 1;
-		}
-	}
+	ghSemaphore[0] = CreateSemaphore( NULL, 0, 1, NULL);
+	ghSemaphore[1] = CreateSemaphore( NULL, 0, 1, NULL);
 	ghSemaphore[2] = CreateSemaphore( NULL, 1, 1, NULL);
 
-	_beginthreadex(0, 0, FolderFilesWatchThread, _T("C:\\Users\\vuchi\\Documents\\Visual Studio 2008\\Projects\\bt1_4\\bt1_4\\Diem_thi") , 0, 0);
+	_beginthreadex(0, 0, FolderFilesWatchThread, _T("DIEM_THI_2016") , 0, 0);
 	_beginthreadex(0, 0 ,readData, NULL , 0, 0);
 	
 	ui.xuly(&ds,&ghSemaphore[2]);

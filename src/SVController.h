@@ -18,7 +18,7 @@ public:
 	void setSosv(int n);
 	int getSosv();
 	SinhVien nhapThongTin();
-	void nhapTay();
+	void nhapTay(int tmp, int index);
 	int nhapFile(const char *dir,int index);
 	void nhapFiles(const char *dir);
 	bool luuDuLieu();

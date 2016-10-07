@@ -36,35 +36,48 @@ void UI::xuly(SVController *ds, HANDLE* ghSemaphore)
 	string dir;
 	string temp;
 	
-	//cout << "Load du lieu phien lam viec truoc(y/n): ";
-	//fflush(stdin);
-	//getline(cin, temp);
-	//while(1){
-	//	if(temp.compare("y") == 0)
-	//		if(ds->nhapFile("output.txt",0) != true){
-	//			cout << "Load khong thanh cong\n";
-	//			temp = "n";
-	//		} else break;
-	//	else{
-	//		/*cout << "Chon phuong thuc nhap danh sach:\n1.Ban phim\t2.File\n";
-	//		cin >> i;
-	//		if (i == 1){
-	//			cout << "Nhap so sinh vien: \n";
-	//			cin >> sosv;
-	//			ds->setSosv(sosv + ds->getSosv());
-	//			cout << "Nhap danh sach sinh vien:\n";
-	//			ds->nhapTay();
-	//		}
-	//		if(i == 2)*/
-	//			fflush(stdin);
-	//			sosv = ds->getSosv();
-	//			cout << "Nhap duong dan: ";
-	//			getline(cin, dir);
-	//			sosv += ds->nhapFile(dir.c_str(), sosv);
-	//			ds->setSosv(sosv);
-	//			break;			
-	//	}
-	//}
+	cout << "Load du lieu phien lam viec truoc(y/n): ";
+	fflush(stdin);
+	getline(cin, temp);
+	while(1){
+		if(temp.compare("y") == 0){
+			sosv = ds->getSosv();
+			sosv += ds->nhapFile("output1.txt", sosv);
+			if(sosv == ds->getSosv()){
+				cout << "Load khong thanh cong\n";
+				temp = "n";
+			}else{
+				ds->setSosv(sosv);
+				break;
+			}
+		}
+		else{
+			cout << "Chon phuong thuc nhap danh sach:\n1.Ban phim\t2.File\n";
+			cin >> i;
+			if (i == 1){
+				cout << "Nhap so sinh vien: \n";
+				cin >> sosv;
+				cout << "Nhap danh sach sinh vien:\n";
+				ds->nhapTay(sosv, ds->getSosv());
+				ds->setSosv(sosv + ds->getSosv() - 1);
+			}
+			if(i == 2){
+				fflush(stdin);
+				sosv = ds->getSosv();
+				cout << "Nhap duong dan: ";
+				getline(cin, dir);
+				sosv += ds->nhapFile(dir.c_str(), sosv);
+				if(sosv == ds->getSosv()){
+					cout << "Nhap khong thanh cong\n";
+					temp = "n";
+				}else{
+					ds->setSosv(sosv);
+					break;
+				}
+			}
+			break;			
+		}
+	}
 	system("CLS");
 	fflush(stdin);
 	while (i = xuatMenu())

@@ -66,21 +66,22 @@ SinhVien SVController::nhapThongTin()
 	return sv;
 }
 
-void SVController::nhapTay()
+void SVController::nhapTay(int tmp, int index)
 {
 	fflush(stdin);
-	for(int i = 0; i < sosv; i++){
-		cout << "Sinh vien thu " << i+1 << ":\n";
-		ds[i] = nhapThongTin();
+	for(int i = 0; i < tmp; i++){
+		cout << "Sinh vien thu " << i+ index + 1 << ":\n";
+		ds[i+index] = nhapThongTin();
 		for( int j = 0; j <= i ; j++){
-			if(ds[j].getSbd() == ds[i].getSbd() && i != 0 && j != i){
+			if(ds[j].getSbd() == ds[i + index].getSbd() && j != (i+index)){
 				cout << "So bao danh bi trung, nhap lai thong tin\n";
 				cout << "Sinh vien thu " << i+1 << ":\n";
-				ds[i]= nhapThongTin();
+				ds[i+index]= nhapThongTin();
 				j--;
 			}
 		}
 	}
+	sosv = tmp + index;
 }
 
 int SVController::nhapFile(const char *dir,int index)
@@ -94,7 +95,7 @@ int SVController::nhapFile(const char *dir,int index)
 	char *seps = "-";
 	
 	if (_access(dir, 00) == -1)
-		return false;
+		return 0;
 	
 	ifstream file;
 	file.open(dir);
