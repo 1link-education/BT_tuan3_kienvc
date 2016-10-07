@@ -61,7 +61,7 @@ unsigned __stdcall FolderFilesWatchThread(LPVOID lpParam) // thread procedure
 			1,            // increase count by one
 			NULL) )       // not interested in previous count
 		{
-			printf("ReleaseSemaphore error: %d\n", GetLastError());
+			printf("ReleaseSemaphore[0] error: %d\n", GetLastError());
 		}
 		FindNextChangeNotification(hFileChange);
 		//LeaveCriticalSection(&critical);
@@ -82,14 +82,24 @@ unsigned __stdcall readData(void* Param) // thread procedure
 		WaitForSingleObject( ghSemaphore[0],   // handle to semaphore
 			INFINITE);           // zero-second 
 		//while(!TryEnterCriticalSection(&critical)){}
+		WaitForSingleObject(ghSemaphore[2], INFINITE);
+		
 		ds.nhapFiles("output.txt");
+		
 		//LeaveCriticalSection(&critical);
+		if (!ReleaseSemaphore( 
+			ghSemaphore[2],  // handle to semaphore
+			1,            // increase count by one
+			NULL) )       // not interested in previous count
+		{
+			printf("ReleaseSemaphore[2] error: %d\n", GetLastError());
+		}
 		if (!ReleaseSemaphore( 
 			ghSemaphore[1],  // handle to semaphore
 			1,            // increase count by one
 			NULL) )       // not interested in previous count
 		{
-			printf("ReleaseSemaphore error: %d\n", GetLastError());
+			printf("ReleaseSemaphore error[1]: %d\n", GetLastError());
 		}
 	}
 	return 0;
@@ -117,13 +127,17 @@ int main(int argc, char argv[])
 			return 1;
 		}
 	}
+	ghSemaphore[2] = CreateSemaphore( NULL, 1, 1, NULL);
+
 	_beginthreadex(0, 0, FolderFilesWatchThread, _T("C:\\Users\\vuchi\\Documents\\Visual Studio 2008\\Projects\\bt1_4\\bt1_4\\Diem_thi") , 0, 0);
 	_beginthreadex(0, 0 ,readData, NULL , 0, 0);
 	
-	ui.xuly(&ds);
+	ui.xuly(&ds,&ghSemaphore[2]);
 
 	CloseHandle(ghSemaphore[0]);
 	CloseHandle(ghSemaphore[1]);
+	CloseHandle(ghSemaphore[2]);
+
 
 	return 0;
 }
