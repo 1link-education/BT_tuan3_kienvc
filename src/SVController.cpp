@@ -66,21 +66,22 @@ SinhVien SVController::nhapThongTin()
 	return sv;
 }
 
-void SVController::nhapTay()
+void SVController::nhapTay(int tmp, int index)
 {
 	fflush(stdin);
-	for(int i = 0; i < sosv; i++){
-		cout << "Sinh vien thu " << i+1 << ":\n";
-		ds[i] = nhapThongTin();
+	for(int i = 0; i < tmp; i++){
+		cout << "Sinh vien thu " << i+ index + 1 << ":\n";
+		ds[i+index] = nhapThongTin();
 		for( int j = 0; j <= i ; j++){
-			if(ds[j].getSbd() == ds[i].getSbd() && i != 0 && j != i){
+			if(ds[j].getSbd() == ds[i + index].getSbd() && j != (i+index)){
 				cout << "So bao danh bi trung, nhap lai thong tin\n";
 				cout << "Sinh vien thu " << i+1 << ":\n";
-				ds[i]= nhapThongTin();
+				ds[i+index]= nhapThongTin();
 				j--;
 			}
 		}
 	}
+	sosv = tmp + index;
 }
 
 int SVController::nhapFile(const char *dir,int index)
@@ -94,18 +95,15 @@ int SVController::nhapFile(const char *dir,int index)
 	char *seps = "-";
 	
 	if (_access(dir, 00) == -1)
-		return false;
-	cout << dir << "\n";
+		return 0;
+	
 	ifstream file;
 	file.open(dir);
 	if(file.is_open()){
 		file >> tmp_sosv;
-		cout << tmp_sosv << "\n";
 		getline(file,tmp);
 		while(!file.eof() && i != tmp_sosv){
 			getline(file,tmp);
-			cout <<"vao dc nhap file\n";
-
 
 			tmp3 = tmp.c_str();
 			strcpy_s(tmp2, tmp3);
@@ -121,14 +119,16 @@ int SVController::nhapFile(const char *dir,int index)
 			ly_s = strtok_s(NULL, seps, &next_token);
 			hoa_s = strtok_s(NULL, seps, &next_token);
 			next_token = NULL;
-			for( int j = 0; j < sosv ; j++)
+
+			ds[i+index] = SinhVien(ten, sbd, diachi, gioitinh, atof(toan_s), atof(ly_s), atof(hoa_s));
+			
+			for( int j = 0; j < sosv; j++)
 				if(ds[j].getSbd() == sbd){
 					i--;
 					tmp_sosv--;
+					break;
 				}
-			ds[i+index] = SinhVien(ten, sbd, diachi, gioitinh, atof(toan_s), atof(ly_s), atof(hoa_s));
 			i++;
-
 		}
 		file.close();
 		return tmp_sosv;
@@ -154,10 +154,10 @@ void SVController::nhapFiles(const char *dir)
 	}
 	for(int y = 0; y <= i-2; y++)
 	{
-		tmp += nhapFile(line[y].c_str(), tmp);
+		
+		sosv += nhapFile(line[y].c_str(), sosv);
 	}
-	sosv += tmp;
-	cout << sosv << "\n";
+	//sosv = tmp;
 }
 void SVController::timkiem(string yeucau)
 {
@@ -411,7 +411,7 @@ void SVController::thongke(string yeucau)
 bool SVController::luuDuLieu()
 {
 	ofstream file;
-	file.open("output.txt");
+	file.open("output1.txt");
 	if(file.is_open()){
 		file << sosv << '\n';
 		for (int index = 0; index < sosv; index++)

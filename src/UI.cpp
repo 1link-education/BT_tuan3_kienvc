@@ -29,51 +29,60 @@ int UI::xuatMenu()
 	system("CLS");
 	return i;
 }
-void UI::xuly(SVController *ds)
+void UI::xuly(SVController *ds, HANDLE* ghSemaphore)
 {
 	int n, sosv, i = 0;
 	char c;
 	string dir;
 	string temp;
-	//ds.nhapFiles("output.txt");
+	
 	cout << "Load du lieu phien lam viec truoc(y/n): ";
 	fflush(stdin);
 	getline(cin, temp);
-	/*while(1){
-		if(temp.compare("y") == 0)
-			if(ds.nhapFile("output.txt",0) != true){
+	while(1){
+		if(temp.compare("y") == 0){
+			sosv = ds->getSosv();
+			sosv += ds->nhapFile("output1.txt", sosv);
+			if(sosv == ds->getSosv()){
 				cout << "Load khong thanh cong\n";
 				temp = "n";
-			} else break;
+			}else{
+				ds->setSosv(sosv);
+				break;
+			}
+		}
 		else{
 			cout << "Chon phuong thuc nhap danh sach:\n1.Ban phim\t2.File\n";
 			cin >> i;
 			if (i == 1){
 				cout << "Nhap so sinh vien: \n";
 				cin >> sosv;
-				ds.setSosv(sosv);
 				cout << "Nhap danh sach sinh vien:\n";
-				ds.nhapTay();
+				ds->nhapTay(sosv, ds->getSosv());
+				ds->setSosv(sosv + ds->getSosv() - 1);
 			}
 			if(i == 2){
 				fflush(stdin);
+				sosv = ds->getSosv();
 				cout << "Nhap duong dan: ";
 				getline(cin, dir);
-				if(ds.nhapFile(dir.c_str(), 0))
-					cout << "Nhap thanh cong\n";
-				else {
-					cout <<"Nhap khong thanh cong\n";
-					return;
+				sosv += ds->nhapFile(dir.c_str(), sosv);
+				if(sosv == ds->getSosv()){
+					cout << "Nhap khong thanh cong\n";
+					temp = "n";
+				}else{
+					ds->setSosv(sosv);
+					break;
 				}
 			}
-			break;
+			break;			
 		}
-	}*/
-	ds->sapxep("sbd");
+	}
 	system("CLS");
 	fflush(stdin);
 	while (i = xuatMenu())
 	{
+		WaitForSingleObject(*ghSemaphore, INFINITE);
 		switch (i)
 		{
 		case 1:
@@ -159,6 +168,13 @@ void UI::xuly(SVController *ds)
 			cout << "Quay tro lai menu(y/n): ";
 			fflush(stdin);
 			c = getchar();
+			if (!ReleaseSemaphore( 
+				*ghSemaphore,  // handle to semaphore
+				1,            // increase count by one
+				NULL) )       // not interested in previous count
+			{
+				printf("ReleaseSemaphore[2] error: %d\n", GetLastError());
+			}
 		}while(c != 'y');
 	}
 
