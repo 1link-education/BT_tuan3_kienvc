@@ -39,6 +39,8 @@ void UI::xuly(SVController *ds, HANDLE* ghSemaphore)
 	cout << "Load du lieu phien lam viec truoc(y/n): ";
 	fflush(stdin);
 	getline(cin, temp);
+	
+	WaitForSingleObject(*ghSemaphore, INFINITE);
 	while(1){
 		if(temp.compare("y") == 0){
 			sosv = ds->getSosv();
@@ -78,6 +80,14 @@ void UI::xuly(SVController *ds, HANDLE* ghSemaphore)
 			break;			
 		}
 	}
+	if (!ReleaseSemaphore( 
+		*ghSemaphore,  // handle to semaphore
+		1,            // increase count by one
+		NULL) )       // not interested in previous count
+	{
+		printf("ReleaseSemaphore[2] error: %d\n", GetLastError());
+	}
+	
 	system("CLS");
 	fflush(stdin);
 	while (i = xuatMenu())
