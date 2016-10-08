@@ -55,7 +55,6 @@ unsigned __stdcall FolderFilesWatchThread(LPVOID lpParam) // thread procedure
 					tmp += dir1;
 					string dir2(tmp.begin(), tmp.end());
 					file << dir2 << "\n";
-					cout << dir2 << "\n";
 				}
 			}
 			if(FindNextFile(listFile, &file_data) == FALSE)
