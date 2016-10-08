@@ -19,6 +19,8 @@ unsigned __stdcall FolderFilesWatchThread(LPVOID lpParam) // thread procedure
 {
 	WIN32_FIND_DATA file_data;
 	ofstream file;
+	SYSTEMTIME  st;
+	FILETIME    ft;
 
 	HANDLE hFileChange = FindFirstChangeNotification((LPTSTR)lpParam, // folder path
 		FALSE,            // don't look in subfolders
@@ -31,7 +33,7 @@ unsigned __stdcall FolderFilesWatchThread(LPVOID lpParam) // thread procedure
 		// handle error (see this FAQ)
 		return dwError;
 	}
-
+	GetSystemTime(&st);
 	WaitForSingleObject(hFileChange, INFINITE);
 
 	while(TRUE)
@@ -47,10 +49,14 @@ unsigned __stdcall FolderFilesWatchThread(LPVOID lpParam) // thread procedure
 			i++;
 			if(i > 2){
 				wstring tmp = L"DIEM_THI_2016\\";
-				wstring dir1(file_data.cFileName);
-				tmp += dir1;
-				string dir2(tmp.begin(), tmp.end());
-				file << dir2 << "\n";
+				SystemTimeToFileTime(&st,&ft);
+				if(CompareFileTime(&ft, &file_data.ftLastAccessTime) == -1){
+					wstring dir1(file_data.cFileName);
+					tmp += dir1;
+					string dir2(tmp.begin(), tmp.end());
+					file << dir2 << "\n";
+					cout << dir2 << "\n";
+				}
 			}
 			if(FindNextFile(listFile, &file_data) == FALSE)
 				break;
@@ -65,11 +71,13 @@ unsigned __stdcall FolderFilesWatchThread(LPVOID lpParam) // thread procedure
 		}
 		FindNextChangeNotification(hFileChange);
 		//LeaveCriticalSection(&critical);
+		GetSystemTime(&st);
 		WaitForSingleObject(hFileChange, INFINITE);
 		WaitForSingleObject(ghSemaphore[1], INFINITE);
 
 
 	}
+	CloseHandle(hFileChange);
 	return 0;
 }
 unsigned __stdcall readData(void* Param) // thread procedure
